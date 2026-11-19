@@ -1,0 +1,69 @@
+/* Template 4 (invented, for testing): parallel study view.
+   Source in the right half; commentaries stacked in the left half in three
+   independent flows: Raavad above, Kesef Mishneh in the middle, the rest
+   (Maaseh Rokeach, Or Hayashar, Merkevet Hamishneh, Shoham Veyoshfeh,
+   Taharat Yisrael) at the bottom. Fixed geometry; tests three flows
+   side by side with the source. */
+
+@page { size: A4; margin: 0; }
+
+@-epubx-page-template {
+
+  @-epubx-flow raavad { -epubx-flow-consume: all; }
+  @-epubx-flow km     { -epubx-flow-consume: all; }
+  @-epubx-flow rest   { -epubx-flow-consume: all; }
+
+  .comm.raavad { -epubx-flow-into: raavad; -epubx-flow-linger: 99; }
+  .comm.km     { -epubx-flow-into: km; -epubx-flow-linger: 99; }
+  .comm.mr, .comm.oh, .comm.mkm, .comm.sv, .comm.ti {
+    -epubx-flow-into: rest; -epubx-flow-linger: 99;
+  }
+
+  .head-area {
+    content: "מבט מקביל · משנה תורה · טומאת מת י״ח";
+    top: 7mm; left: 15mm; right: 15mm; height: 7mm;
+    font-size: 8pt; color: #777; text-align: center;
+    border-bottom: 0.5pt solid #ccc;
+  }
+
+  .body-area {
+    -epubx-flow-from: body;
+    top: 18mm; bottom: 16mm; right: 12mm; width: 88mm;
+    border-left: 0.6pt solid #bbb; padding-left: 3mm;
+  }
+
+  .raavad-area {
+    -epubx-flow-from: raavad;
+    top: 18mm; height: 75mm; left: 12mm; width: 88mm;
+    font-size: 8.5pt; line-height: 1.35;
+    border-bottom: 0.4pt dashed #ccc;
+  }
+
+  .km-area {
+    -epubx-flow-from: km;
+    top: 97mm; height: 100mm; left: 12mm; width: 88mm;
+    font-size: 8.5pt; line-height: 1.35;
+    border-bottom: 0.4pt dashed #ccc;
+  }
+
+  .rest-area {
+    -epubx-flow-from: rest;
+    top: 201mm; bottom: 16mm; left: 12mm; width: 88mm;
+    font-size: 8.5pt; line-height: 1.35;
+  }
+
+  .page-num {
+    content: counter(page);
+    bottom: 5mm; left: 0; right: 0; height: 7mm;
+    font-size: 9pt; text-align: center; color: #888;
+  }
+
+  @-epubx-page-master {
+    @-epubx-partition class(head-area) {}
+    @-epubx-partition class(body-area) {}
+    @-epubx-partition class(raavad-area) {}
+    @-epubx-partition class(km-area) {}
+    @-epubx-partition class(rest-area) {}
+    @-epubx-partition class(page-num) {}
+  }
+}

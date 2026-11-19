@@ -1,0 +1,49 @@
+/* Template 1: plain text, commentaries as labeled footnotes at page bottom.
+   Plain CSS Paged Media (GCPM footnotes) - no adaptive layout. */
+
+@page {
+  size: A5;
+  footnote-policy: line;
+  margin: 16mm 14mm 20mm 14mm;
+  @bottom-center {
+    content: counter(page);
+    font-size: 8pt;
+    color: #888;
+  }
+  @top-center {
+    content: "משנה תורה · הלכות טומאת מת פרק י״ח";
+    font-size: 7.5pt;
+    color: #999;
+  }
+}
+
+body { margin: 0; }
+
+body { footnote-policy: line; }
+
+.comm {
+  float: footnote;
+  footnote-display: block;
+  font-size: 8.5pt;
+  line-height: 1.35;
+  text-align: right;
+}
+
+::footnote-call {
+  content: "[" counter(footnote) "]";
+  vertical-align: super;
+  font-size: 65%;
+  color: #a00;
+}
+
+::footnote-marker {
+  content: "[" counter(footnote) "] ";
+  font-weight: bold;
+  color: #a00;
+}
+
+@footnote {
+  border-top: 0.4pt solid #999;
+  padding-top: 3pt;
+  margin-top: 6pt;
+}

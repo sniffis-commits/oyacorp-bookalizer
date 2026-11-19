@@ -1,0 +1,59 @@
+/* Template 5 (feasibility probe): linked space adjustment.
+   The source partition has content-driven (auto) height; the commentary
+   partitions start at -epubx-expr(bodyp.height + offset) and extend to the
+   page bottom, so they absorb whatever space the source does NOT use on each
+   page. Tests whether partition-to-partition geometry references give real
+   "commentary takes space left by its source" behavior. */
+
+@page { size: A4; margin: 0; }
+
+@-epubx-page-template {
+
+  @-epubx-flow raavad { -epubx-flow-consume: all; }
+  @-epubx-flow km     { -epubx-flow-consume: all; }
+
+  .comm.raavad { -epubx-flow-into: raavad; -epubx-flow-linger: 99; }
+  .comm.km     { -epubx-flow-into: km; -epubx-flow-linger: 99; }
+
+  .head-area {
+    content: "משנה תורה · טומאת מת י״ח · ניסוי קיזוג מקום";
+    top: 7mm; left: 15mm; right: 15mm; height: 7mm;
+    font-size: 8pt; color: #777; text-align: center;
+    border-bottom: 0.5pt solid #ccc;
+  }
+
+  .page-num {
+    content: counter(page);
+    bottom: 5mm; left: 0; right: 0; height: 7mm;
+    font-size: 9pt; text-align: center; color: #888;
+  }
+
+  @-epubx-page-master {
+    @-epubx-partition class(head-area) {}
+
+    /* raavad: content-driven (auto) height at the top of the page;
+       only works because a Raavad note fits within one page */
+    @-epubx-partition raavadp {
+      -epubx-flow-from: raavad;
+      top: 18mm; right: 15mm; width: 180mm;
+      font-size: 8.5pt; line-height: 1.35;
+    }
+
+    /* source and km begin where the raavad block actually ended;
+       when no raavad is left on a page they reclaim the full height */
+    @-epubx-partition bodyp {
+      -epubx-flow-from: body;
+      top: -epubx-expr(raavadp.height + 24mm); bottom: 14mm;
+      right: 15mm; width: 88mm;
+    }
+    @-epubx-partition kmp {
+      -epubx-flow-from: km;
+      top: -epubx-expr(raavadp.height + 24mm); bottom: 14mm;
+      left: 15mm; width: 88mm;
+      font-size: 8.5pt; line-height: 1.35;
+      border-right: 0.4pt dashed #ccc; padding-right: 2mm;
+    }
+
+    @-epubx-partition class(page-num) {}
+  }
+}

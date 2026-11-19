@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>משנה תורה · הוכחת היתכנות לעימוד</title>
+<style>
+  body { font-family: "Noto Sans Hebrew", Arial, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+  header { background: #1f2937; color: #fff; padding: 8px 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  header h1 { font-size: 15px; margin: 0 12px 0 0; }
+  header button {
+    font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 6px;
+    border: 1px solid #4b5563; background: #374151; color: #fff; cursor: pointer;
+  }
+  header button.active { background: #2563eb; border-color: #2563eb; }
+  #controls {
+    background: #f3f4f6; border-bottom: 1px solid #d1d5db; padding: 6px 14px;
+    display: none; gap: 22px; align-items: center; font-size: 13px; flex-wrap: wrap;
+  }
+  #controls.on { display: flex; }
+  #controls fieldset { border: 1px solid #d1d5db; border-radius: 6px; display: flex; gap: 14px; flex-wrap: wrap; }
+  #controls legend { font-size: 12px; color: #4b5563; }
+  #controls .stylerow, #controls .rolerow { display: flex; gap: 6px; align-items: center; }
+  #controls .stylerow b { min-width: 60px; font-size: 12px; }
+  #controls .rolerow b { min-width: 130px; font-size: 12px; }
+  #controls label { display: flex; gap: 8px; align-items: center; }
+  #controls output { min-width: 52px; display: inline-block; color: #374151; }
+  iframe { flex: 1; border: 0; width: 100%; }
+</style>
+</head>
+<body>
+<header>
+  <h1>משנה תורה · טומאת מת י״ח ג–ה</h1>
+  <button data-t="t1-simple.css" class="active">1 · טקסט עם הערות למטה</button>
+  <button data-t="t2-rambam.css">2 · עימוד רמב״ם</button>
+  <button data-t="t3-gemara.css">3 · צורת הדף</button>
+  <button data-t="t4-parallel.css">4 · מבט מקביל</button>
+  <button data-t="t6-anchored.gen.css">6 · ראב״ד צף (ניסוי חלקי)</button>
+  <button data-t="__playground">5 · גאומטריה וגופנים</button>
+</header>
+<div id="controls">
+  <fieldset>
+    <legend>גאומטריה</legend>
+    <label>רוחב עמודת מקור
+      <input id="srcW" type="range" min="70" max="130" value="114" step="1">
+      <output id="srcWOut">114 מ״מ</output>
+    </label>
+    <label>רוחב עמודת פרשנים
+      <input id="commW" type="range" min="20" max="50" value="31" step="1">
+      <output id="commWOut">31 מ״מ</output>
+    </label>
+  </fieldset>
+  <fieldset>
+    <legend>סגנונות מוגדרים מראש — עריכת סגנון חלה על כל הסעיפים המשוייכים אליו</legend>
+    <div class="stylerow" data-role="a">
+      <b>סגנון א׳</b>
+      <select></select>
+      <input type="range" min="9" max="20" value="13" step="0.5">
+      <output>13pt</output>
+    </div>
+    <div class="stylerow" data-role="b">
+      <b>סגנון ב׳</b>
+      <select></select>
+      <input type="range" min="8" max="18" value="12" step="0.5">
+      <output>12pt</output>
+    </div>
+    <div class="stylerow" data-role="c">
+      <b>סגנון ג׳</b>
+      <select></select>
+      <input type="range" min="6" max="14" value="9.5" step="0.5">
+      <output>9.5pt</output>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>שיוך סעיפים לסגנון</legend>
+    <div class="rolerow" data-map="0"><b>טקסט מקור (3 סעיפים)</b> <select class="assign"></select></div>
+    <div class="rolerow" data-map="1"><b>כותרת הלכה (3 כותרות)</b> <select class="assign"></select></div>
+    <div class="rolerow" data-map="2"><b>גוף פירוש (12 מפרשים)</b> <select class="assign"></select></div>
+    <div class="rolerow" data-map="3"><b>תווית מפרש (12 תוויות)</b> <select class="assign"></select></div>
+  </fieldset>
+</div>
+<iframe id="v"></iframe>
+<script src="bundle.js"></script>
+<script>
+  const frame = document.getElementById('v');
+  const buttons = [...document.querySelectorAll('button[data-t]')];
+  const controls = document.getElementById('controls');
+  const srcW = document.getElementById('srcW'), commW = document.getElementById('commW');
+  const FONT_OPTS = [['david','דוד (מערכת)'],['frank','פרנק-ריהל (מערכת)'],['narkisim','נרקיסים (מערכת)'],['arial','אריאל (מערכת)'],['noto','נוטו סריף (מובנה)'],['rubik','רוביק (מובנה)']];
+  const STYLE_LETTERS = ['א','ב','ג'];
+  const rows = {};
+  document.querySelectorAll('.stylerow').forEach(r => {
+    const sel = r.querySelector('select'), rng = r.querySelector('input'), out = r.querySelector('output');
+    FONT_OPTS.forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); });
+    rows[r.dataset.role] = { sel, rng, out };
+  });
+  const DEFAULT_MAP = ['b','a','c','c'];
+  const assigns = [];
+  document.querySelectorAll('.rolerow').forEach(r => {
+    const sel = r.querySelector('select');
+    STYLE_LETTERS.forEach((t, i) => { const o = document.createElement('option'); o.value = 'abc'[i]; o.textContent = 'סגנון ' + t; sel.appendChild(o); });
+    sel.value = DEFAULT_MAP[+r.dataset.map];
+    assigns[+r.dataset.map] = sel;
+  });
+  let reloadN = 0;
+  const B = window.BUNDLE;
+  const FONT_FACE_CSS = Object.entries(B.fonts).map(([k, v]) =>
+    "@font-face { font-family: '" + (k === 'noto' ? 'Noto Serif Hebrew' : 'Rubik') +
+    "'; src: url(data:font/woff2;base64," + v + ") format('woff2'); font-weight: 100 900; font-display: swap; }").join('\n');
+  const FONTS = {
+    david: '"David", "David Libre", serif',
+    frank: '"Frank Ruehl", "Frank-Ruehl", serif',
+    narkisim: '"Narkisim", "David", serif',
+    arial: 'Arial, "Noto Sans Hebrew", sans-serif',
+    noto: '"Noto Serif Hebrew", "David", serif',
+    rubik: '"Rubik", "Noto Sans Hebrew", sans-serif',
+  };
+  function viewerUrl(styleB64) {
+    // query-bust forces a real reload: changing only the #fragment does not re-init the viewer.
+    // data: URLs let the viewer run from file:// with no server.
+    return 'viewer/index.html?r=' + (++reloadN) + '#src=data:text/html;base64,' + B.content +
+           '&bookMode=false&renderAllPages=true&userStyle=data:text/css;base64,' + styleB64;
+  }
+  function load(tpl) {
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.t === tpl));
+    const playground = tpl === '__playground';
+    controls.classList.toggle('on', playground);
+    if (playground) { renderPlayground(); return; }
+    frame.src = viewerUrl(B.templates[tpl]);
+  }
+  function buildPlaygroundCss() {
+    const roleF = {}, roleS = {};
+    ['a','b','c'].forEach(k => { roleF[k] = FONTS[rows[k].sel.value]; roleS[k] = rows[k].rng.value; });
+    const m = assigns.map(a => a.value);
+    const side = (210 - parseFloat(srcW.value)) / 2;
+    const role = i => m[i] || 'c';
+    return FONT_FACE_CSS + `
+@page { size: A4; margin: 0; }
+@-epubx-page-template {
+  @-epubx-flow km     { -epubx-flow-consume: all; }
+  @-epubx-flow rest   { -epubx-flow-consume: all; }
+  .comm.raavad { float: left; width: 33%; margin: 0.5mm 0 1.5mm 3mm; padding: 1.5mm; background: #f5f5f5; }
+  h2.st-head { clear: both; }
+  .comm.km { -epubx-flow-into: km; -epubx-flow-linger: 99; }
+  .comm.mr, .comm.oh, .comm.mkm, .comm.sv, .comm.ti { -epubx-flow-into: rest; -epubx-flow-linger: 99; }
+  .head-area { content: "משנה תורה · הלכות טומאת מת · פרק י״ח"; top: 8mm; left: 15mm; right: 15mm; height: 8mm; font-size: 8.5pt; color: #777; text-align: center; border-bottom: 0.5pt solid #ccc; }
+  .body-area { -epubx-flow-from: body; top: 20mm; bottom: 60mm; left: ${side}mm; right: ${side}mm; font-size: ${roleS[role(0)]}pt; }
+  .km-area { -epubx-flow-from: km; top: 20mm; bottom: 60mm; right: 13mm; width: ${commW.value}mm; font-size: ${roleS[role(2)]}pt; line-height: 1.35; border-right: 0.5pt solid #ddd; padding-right: 2mm; }
+  .km-bottom { -epubx-flow-from: km; top: 241mm; bottom: 46mm; left: ${side}mm; right: ${side}mm; font-size: ${roleS[role(2)]}pt; line-height: 1.35; border-top: 0.4pt solid #ddd; padding-top: 1.5mm; }
+  .km-inner { -epubx-flow-from: km; top: 20mm; bottom: 60mm; left: 13mm; width: ${commW.value}mm; font-size: ${roleS[role(2)]}pt; line-height: 1.35; border-left: 0.5pt solid #ddd; padding-left: 2mm; }
+  .rest-area { -epubx-flow-from: rest; bottom: 14mm; left: 13mm; right: 13mm; height: 28mm; font-size: ${roleS[role(2)]}pt; line-height: 1.35; border-top: 0.6pt solid #bbb; padding-top: 1.5mm; }
+  .page-num { content: counter(page); bottom: 4mm; left: 0; right: 0; height: 8mm; font-size: 9pt; text-align: center; color: #888; }
+  .st-src p { font-family: ${roleF[role(0)]} !important; font-size: ${roleS[role(0)]}pt !important; }
+  h2.st-head { font-family: ${roleF[role(1)]} !important; font-size: ${roleS[role(1)]}pt !important; }
+  .st-comm { font-family: ${roleF[role(2)]} !important; font-size: ${roleS[role(2)]}pt !important; }
+  .st-label { font-family: ${roleF[role(3)]} !important; font-size: ${roleS[role(3)]}pt !important; }
+  @-epubx-page-master {
+    @-epubx-partition class(head-area) {}
+    @-epubx-partition class(body-area) {}
+    @-epubx-partition class(km-inner) {}
+    @-epubx-partition class(km-bottom) {}
+    @-epubx-partition class(km-area) {}
+    @-epubx-partition class(rest-area) {}
+    @-epubx-partition class(page-num) {}
+  }
+}`;
+  }
+  function renderPlayground() {
+    frame.src = viewerUrl(btoa(unescape(encodeURIComponent(buildPlaygroundCss()))));
+  }
+  let t = null;
+  function onSlide() {
+    document.getElementById('srcWOut').textContent = srcW.value + ' מ״מ';
+    document.getElementById('commWOut').textContent = commW.value + ' מ״מ';
+    Object.values(rows).forEach(r => { r.out.textContent = r.rng.value + 'pt'; });
+    clearTimeout(t); t = setTimeout(renderPlayground, 350);
+  }
+  [srcW, commW].forEach(el => el.addEventListener('input', onSlide));
+  document.querySelectorAll('.stylerow select, .stylerow input, .rolerow select').forEach(el => el.addEventListener('input', onSlide));
+  buttons.forEach(b => b.addEventListener('click', () => load(b.dataset.t)));
+  load('t1-simple.css');
+</script>
+</body>
+</html>
