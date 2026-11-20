@@ -30,7 +30,8 @@
 <body>
 <header>
   <h1>משנה תורה · טומאת מת י״ח ג–ה</h1>
-  <button data-t="t1-simple.css" class="active">1 · טקסט עם הערות למטה</button>
+  <button data-t="__t7" class="active">7 · עימוד קונטור (מאומת · 5 עמ׳)</button>
+  <button data-t="t1-simple.css">1 · טקסט עם הערות למטה</button>
   <button data-t="t2-rambam.css">2 · עימוד רמב״ם</button>
   <button data-t="t3-gemara.css">3 · צורת הדף</button>
   <button data-t="t4-parallel.css">4 · מבט מקביל</button>
@@ -125,6 +126,14 @@
     const playground = tpl === '__playground';
     controls.classList.toggle('on', playground);
     if (playground) { renderPlayground(); return; }
+    if (tpl === '__t7') {
+      // t7 contour build: preprocessed content (content.ordered.html) + verified generated CSS.
+      // Served over HTTP (relative URLs), unlike the bundled file:// tabs.
+      frame.src = 'viewer/index.html?r=' + (++reloadN) +
+        '#src=../content.ordered.html&bookMode=false&renderAllPages=true' +
+        '&userStyle=../templates/t7-contour.gen.css';
+      return;
+    }
     frame.src = viewerUrl(B.templates[tpl]);
   }
   function buildPlaygroundCss() {
@@ -177,7 +186,7 @@
   [srcW, commW].forEach(el => el.addEventListener('input', onSlide));
   document.querySelectorAll('.stylerow select, .stylerow input, .rolerow select').forEach(el => el.addEventListener('input', onSlide));
   buttons.forEach(b => b.addEventListener('click', () => load(b.dataset.t)));
-  load('t1-simple.css');
+  load('__t7');
 </script>
 </body>
 </html>
