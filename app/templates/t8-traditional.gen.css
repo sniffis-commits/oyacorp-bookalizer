@@ -3,9 +3,9 @@
 
 /* book typography overrides (beat content.html <style> by order) */
 .st-src { font-family: 'Frank Ruhl Libre', 'David Libre', serif; font-size: 13pt; line-height: 1.5; text-align: justify; font-weight: 460; }
-h2.st-head, h2.halacha-head { font-family: 'Frank Ruhl Libre', serif; font-weight: 700; font-size: 14pt; text-align: center; }
+.halnum { font-family: 'Frank Ruhl Libre', serif; font-weight: 700; font-size: 135%; }
 h1.book { font-family: 'Frank Ruhl Libre', serif; font-weight: 700; font-size: 15pt; }
-p.sub { display: none; }
+p.sub { font-size: 8.5pt; text-align: center; color: #444; margin: 0 0 6pt; }
 .comm, .st-comm { font-family: 'Noto Rashi Hebrew', 'Noto Serif Hebrew', serif; font-size: 9.5pt; line-height: 1.42; text-align: justify; }
 .comm-name { font-weight: 600; }
 .dibbur { font-weight: 650; }
@@ -20,13 +20,13 @@ p.sub { display: none; }
   }
   .comm.raavad {
     float: left; width: 33%;
-    margin: 0.5mm 0 1.5mm 3mm;
+    margin: 0.5mm 3mm 1.5mm 1mm;
   }
   h2.st-head { clear: both; }
 
 
   @-epubx-page-master base {
-    -epubx-enabled: -epubx-expr(page-number > 6);
+    -epubx-enabled: -epubx-expr(page-number > 5);
     @-epubx-partition head-area-base {
       content: "משנה תורה · הלכות טומאת מת · פרק י״ח";
       top: 8mm; left: 15mm; right: 15mm; height: 8mm;
@@ -83,7 +83,7 @@ p.sub { display: none; }
 
     @-epubx-partition rest-area-base {
       -epubx-flow-from: rest;
-      bottom: 14mm; left: 13mm; right: 13mm; height: auto; max-height: 40mm;
+      bottom: 14mm; left: 13mm; right: 13mm; height: auto; max-height: 15mm;
        padding-top: 1.5mm;
     }
 
@@ -131,7 +131,7 @@ p.sub { display: none; }
 
     @-epubx-partition rest-area-contour-p1 {
       -epubx-flow-from: rest;
-      bottom: 14mm; left: 13mm; right: 13mm; height: auto; max-height: 40mm;
+      bottom: 14mm; left: 13mm; right: 13mm; height: auto; max-height: 15mm;
        padding-top: 1.5mm;
     }
 
@@ -179,14 +179,14 @@ p.sub { display: none; }
 
     @-epubx-partition rest-area-contour-p2 {
       -epubx-flow-from: rest;
-      bottom: 14mm; left: 13mm; right: 13mm; height: auto; max-height: 40mm;
+      bottom: 14mm; left: 13mm; right: 13mm; height: auto; max-height: 15mm;
        padding-top: 1.5mm;
     }
 
   }
 
   @-epubx-page-master contour-p3 {
-    -epubx-enabled: -epubx-expr(page-number == 3);
+    -epubx-enabled: -epubx-expr(page-number < 0);
     @-epubx-partition head-area-contour-p3 {
       content: "משנה תורה · הלכות טומאת מת · פרק י״ח";
       top: 8mm; left: 15mm; right: 15mm; height: 8mm;
@@ -228,14 +228,14 @@ p.sub { display: none; }
 
     @-epubx-partition rest-area-contour-p3 {
       -epubx-flow-from: rest;
-      bottom: 14mm; left: 13mm; right: 13mm; height: auto; max-height: 40mm;
+      bottom: 14mm; left: 13mm; right: 13mm; height: auto; max-height: 15mm;
        padding-top: 1.5mm;
     }
 
   }
 
   @-epubx-page-master restcol-p4 {
-    -epubx-enabled: -epubx-expr(page-number == 4);
+    -epubx-enabled: -epubx-expr(page-number == 3);
     @-epubx-partition head-area-restcol-p4 {
       content: "משנה תורה · הלכות טומאת מת · פרק י״ח"; top: 8mm; left: 15mm; right: 15mm; height: 8mm;
       font-size: 8.5pt; color: #777; text-align: center;
@@ -264,7 +264,7 @@ p.sub { display: none; }
   }
 
   @-epubx-page-master restcol-p5 {
-    -epubx-enabled: -epubx-expr(page-number == 5);
+    -epubx-enabled: -epubx-expr(page-number == 4);
     @-epubx-partition head-area-restcol-p5 {
       content: "משנה תורה · הלכות טומאת מת · פרק י״ח"; top: 8mm; left: 15mm; right: 15mm; height: 8mm;
       font-size: 8.5pt; color: #777; text-align: center;
@@ -293,7 +293,7 @@ p.sub { display: none; }
   }
 
   @-epubx-page-master restcol-p6 {
-    -epubx-enabled: -epubx-expr(page-number == 6);
+    -epubx-enabled: -epubx-expr(page-number == 5);
     @-epubx-partition head-area-restcol-p6 {
       content: "משנה תורה · הלכות טומאת מת · פרק י״ח"; top: 8mm; left: 15mm; right: 15mm; height: 8mm;
       font-size: 8.5pt; color: #777; text-align: center;
